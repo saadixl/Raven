@@ -26,7 +26,7 @@ const getFeedForQuery = async (query: String, n: Number) => {
         const feed = await parser.parseURL(url);
         result = feed.items || [];
     } catch(e) {
-        console.log(`Failed to fetch news for ${query} for ${JSON.stringify(e)}`);
+        console.log(`Failed to fetch news for ${query} for ${JSON.stringify(e, null, 4)}`);
     }
     return result.slice(0, n);
 };
@@ -50,7 +50,7 @@ app.get('/', async (req: any, res: any) => {
 
 app.get('/get-news', async (req: any, res: any) => {
     const news = await fetchNews(TOPICS);
-    res.send(news);
+    res.send(JSON.stringify(news, null, 4));
 });
 
 app.listen(port, () => {
