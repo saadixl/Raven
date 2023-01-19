@@ -1,0 +1,9 @@
+services:
+  news-api:
+    build: services/news-api
+    ports:
+      - "5001:5001"
+  webapp:
+    build: services/webapp
+    ports:
+      - "3000:3000"
