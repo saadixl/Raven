@@ -3,6 +3,12 @@ services:
     build: services/news-api
     ports:
       - "5001:5001"
+  openai-api:
+    build: services/openai-api
+    ports:
+      - "5002:5002"
+    environment:
+      - OPEN_AI_API_KEY=${OPEN_AI_API_KEY}
   webapp:
     build: services/webapp
     ports:
