@@ -11,6 +11,42 @@ const MODELS = {
     MODERATIONS: 'moderations' 
 };
 
+// Types
+
+type Results = {
+    categories: any;
+    category_scores: any;
+}
+
+type ModerationResponse = {
+    id: String;
+    model: String;
+    results: Array<Results>
+};
+
+// Method
+function getRatingsFromModerationResponse(moderationResponse: ModerationResponse): number {
+    const { results } = moderationResponse;
+    const categoryScores = results[0].category_scores;
+    const categoryScoresKeys = Object.keys(categoryScores);
+    const len = categoryScoresKeys.length;
+    let sum = 0;
+    categoryScoresKeys.forEach((key) => {
+        const value = categoryScores[key];
+        sum += value;
+    });
+    const averageScore = (sum / len).toFixed(31).slice(2);
+    let zeroes = 0, nonZeroFlag = false;
+    averageScore.split('').forEach((ch) => {
+        if(!nonZeroFlag && ch === '0') {
+            zeroes++;
+        } else {
+            nonZeroFlag = true;
+        }
+    });
+    return 10 - zeroes;
+}
+
 async function openAiPostRequest(model: string, data: any): Promise<any> {
     const response = await axios.post(
         `${API_URL}/${model}`,
@@ -39,7 +75,10 @@ app.get('/', async (req: any, res: any) => {
 app.post('/test/moderation', async (req: any, res: any) => {
     const { input } = req.body;
     const result = await openAiModeration(input);
-    res.send(result);
+    const rating = getRatingsFromModerationResponse(result);
+    res.send({
+        rating
+    });
 });
 
 
