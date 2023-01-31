@@ -73,6 +73,12 @@ function curateModeratedNewsItem(newsListItem: any): NewsListItem {
     return { title, url: link };
 }
 
+function sortModeratedNewsList(moderatedNewsList: any) {
+    return moderatedNewsList.sort((a: any, b: any) => {
+        return a.rating - b.rating;
+    });
+}
+
 async function moderateNews(newsList: Array<NewsListItem>): Promise<Array<NewsListItem>> {
     let moderatedNewsList: Array<NewsListItem> = [];
     const promises = newsList.map(async (newsListItem) => {
@@ -84,7 +90,7 @@ async function moderateNews(newsList: Array<NewsListItem>): Promise<Array<NewsLi
         });
     });
     await Promise.all(promises);
-    return moderatedNewsList;
+    return sortModeratedNewsList(moderatedNewsList);
 }
 
 app.get('/', async (req: any, res: any) => {
