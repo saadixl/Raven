@@ -1,9 +1,11 @@
+import axios from 'axios';
 const express = require('express');
 const bodyParser = require('body-parser');
 const Parser = require('rss-parser');
 const parser = new Parser();
 const app = express();
 const port = 5001;
+const OPENAI_API_URL = 'http://openai-api:5002/test/moderation/';
 app.use(bodyParser.json());
 
 const TOPICS = [
@@ -15,11 +17,21 @@ const TOPICS = [
 
 const NEWS_LIMIT_PER_QUERY = 5;
 
-const getRssUrl = (query: String) => {
-    return `https://news.google.com/rss/search?q=${query}&hl=en-SG&gl=SG&ceid=SG:en`;
+type NewsListItem = {
+    title: String;
+    url: String;
+    rating?: Number;
 };
 
-const getFeedForQuery = async (query: String, n: Number) => {
+type Moderation = {
+    rating?: Number;
+};
+
+function getRssUrl(query: String) {
+    return `https://news.google.com/rss/search?q=${query}&hl=en-SG&gl=SG&ceid=SG:en`;
+}
+
+async function getFeedForQuery(query: String, n: Number) {
     const url = getRssUrl(query);
     let result = [];
     try {
@@ -29,9 +41,9 @@ const getFeedForQuery = async (query: String, n: Number) => {
         console.log(`Failed to fetch news for ${query} for ${JSON.stringify(e, null, 4)}`);
     }
     return result.slice(0, n);
-};
+}
 
-const fetchNews = async (topics: Array<string>) => {
+async function fetchNews(topics: Array<string>) {
     const news = {}, promises: any = [];
     topics.forEach((query) => {
         promises.push(
@@ -42,7 +54,31 @@ const fetchNews = async (topics: Array<string>) => {
     });
     await Promise.all(promises);
     return news;
-};
+}
+
+async function moderate(input: String): Promise<Moderation> {
+    const data = { input };
+    const response = await axios.post(OPENAI_API_URL, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+}
+
+async function moderateNews(newsList: Array<NewsListItem>): Promise<Array<NewsListItem>> {
+    let moderatedNewsList: Array<NewsListItem> = [];
+    const promises = newsList.map(async (newsListItem) => {
+        const { title } = newsListItem;
+        const { rating } = await moderate(title);
+        return moderatedNewsList.push({
+            ...newsListItem,
+            rating
+        });
+    });
+    await Promise.all(promises);
+    return moderatedNewsList;
+}
 
 app.get('/', async (req: any, res: any) => {
     res.send('Hello, world from news-api');
@@ -50,7 +86,15 @@ app.get('/', async (req: any, res: any) => {
 
 app.get('/get-news', async (req: any, res: any) => {
     const news = await fetchNews(TOPICS);
-    res.send(JSON.stringify(news, null, 4));
+    let moderatedNews: any = {};
+    const topics = Object.keys(news);
+    const promises = topics.map(async (topic: String) => {
+        const newsListByTopic: any = news[topic as keyof Object];
+        const moderatedNewsListByTopic = await moderateNews(newsListByTopic);
+        moderatedNews[topic as keyof Object] = moderatedNewsListByTopic;
+    });
+    await Promise.all(promises);
+    res.send(JSON.stringify(moderatedNews, null, 4));
 });
 
 app.listen(port, () => {
