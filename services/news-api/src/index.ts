@@ -17,7 +17,7 @@ const TOPICS = [
     'bangladesh'
 ];
 
-const NEWS_LIMIT_PER_QUERY = 5;
+const NEWS_LIMIT_PER_QUERY = 10;
 
 type NewsListItem = {
     title: String;
