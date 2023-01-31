@@ -1,9 +1,11 @@
 import axios from 'axios';
+const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const Parser = require('rss-parser');
 const parser = new Parser();
 const app = express();
+app.use(cors());
 const port = 5001;
 const OPENAI_API_URL = 'http://openai-api:5002/test/moderation/';
 app.use(bodyParser.json());
