@@ -12,4 +12,4 @@ services:
   webapp:
     build: services/webapp
     ports:
-      - "3000:3000"
+      - "5005:5005"
