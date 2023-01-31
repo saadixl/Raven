@@ -66,13 +66,18 @@ async function moderate(input: String): Promise<Moderation> {
     return response.data;
 }
 
+function curateModeratedNewsItem(newsListItem: any): NewsListItem {
+    const { title, link } = newsListItem;
+    return { title, url: link };
+}
+
 async function moderateNews(newsList: Array<NewsListItem>): Promise<Array<NewsListItem>> {
     let moderatedNewsList: Array<NewsListItem> = [];
     const promises = newsList.map(async (newsListItem) => {
         const { title } = newsListItem;
         const { rating } = await moderate(title);
         return moderatedNewsList.push({
-            ...newsListItem,
+            ...curateModeratedNewsItem(newsListItem),
             rating
         });
     });
