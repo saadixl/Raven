@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import Masonry from "react-masonry-css";
 const NEWS_API_URL = `http://mh7.pw:5001/get-news/`;
 
