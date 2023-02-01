@@ -73,8 +73,7 @@ function App() {
     };
     return (
       <Container fluid>
-        <Row>
-          <Masonry
+        <Masonry
             breakpointCols={breakpointColumnsObj}
             className="my-masonry-grid"
             columnClassName="my-masonry-grid_column"
@@ -82,7 +81,6 @@ function App() {
             {renderNewsByTopic("top stories", topStories, "top-stories")}
             {comps}
           </Masonry>
-        </Row>
       </Container>
     );
   }
