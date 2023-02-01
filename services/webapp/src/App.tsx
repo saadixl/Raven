@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
-const NEWS_API_URL = 'http://news-api:5001/get-news/';
+const NEWS_API_URL = `${process.env.NEWS_API_DOMAIN}/get-news/`;
 
 function App() {
   const [news, setNews] = useState();
