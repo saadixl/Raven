@@ -2,7 +2,7 @@ html,
 body {
   background-color: #111;
   color: #f5f5f5;
-  font-family: 'Noticia Text', serif;
+  font-family: "Noticia Text", serif;
 }
 
 .my-masonry-grid {
@@ -40,7 +40,7 @@ body {
 }
 
 .news-url {
-  color: #F6F2ED;
+  color: #f6f2ed;
   text-decoration: none;
   font-size: 18px;
 }
@@ -60,26 +60,26 @@ body {
 }
 
 .news-item.top-stories .news-url {
-  color: #FEDFB8;
+  color: #fedfb8;
   font-size: 22px;
   font-weight: bold;
 }
 
 .rating-value {
- font-weight: bold;
- color: #000;
- padding: 1px 5px;
- border-radius: 1px;
- margin-right: 10px;
+  font-weight: bold;
+  color: #000;
+  padding: 1px 5px;
+  border-radius: 1px;
+  margin-right: 10px;
 }
 
 .top-rated {
-  background-color: #FF5733;
+  background-color: #ff5733;
   font-size: 20px;
 }
 
 .not-top-rated {
-  background-color: #2ECC71;
+  background-color: #2ecc71;
 }
 
 @media (prefers-reduced-motion: no-preference) {

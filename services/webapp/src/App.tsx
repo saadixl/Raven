@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
-import { Container, Row, Col } from 'react-bootstrap';
-import Masonry from 'react-masonry-css';
+import { Container, Row, Col } from "react-bootstrap";
+import Masonry from "react-masonry-css";
 const NEWS_API_URL = `http://mh7.pw:5001/get-news/`;
 
 function App() {
@@ -23,11 +23,15 @@ function App() {
 
   function Rating(props: any) {
     const { rating } = props;
-    const ratingClassName = rating >= 7 ? 'top-rated' : 'not-top-rated';
-    return (<code className={"rating-value " + ratingClassName}>{rating}</code>);
+    const ratingClassName = rating >= 7 ? "top-rated" : "not-top-rated";
+    return <code className={"rating-value " + ratingClassName}>{rating}</code>;
   }
 
-  function renderNewsByTopic(topic: String, newsItems: any, additionalClass: string) {
+  function renderNewsByTopic(
+    topic: String,
+    newsItems: any,
+    additionalClass: string
+  ) {
     const newsItemsComps = newsItems.map((newsItem: any) => {
       const { title, url, rating } = newsItem;
       return (
@@ -54,26 +58,33 @@ function App() {
     const comps: any = [];
     Object.keys(news).forEach((topic) => {
       const newsByTopic = news[topic];
-      const newsByTopicComp = renderNewsByTopic(topic, newsByTopic, "rest-of-the-stories");
+      const newsByTopicComp = renderNewsByTopic(
+        topic,
+        newsByTopic,
+        "rest-of-the-stories"
+      );
       comps.push(newsByTopicComp);
     });
     const breakpointColumnsObj = {
       default: 4,
       1100: 3,
       700: 2,
-      500: 1
+      500: 1,
     };
-    return (<Container fluid>
-      <Row>
-        <Masonry
-          breakpointCols={breakpointColumnsObj}
-          className="my-masonry-grid"
-          columnClassName="my-masonry-grid_column">
+    return (
+      <Container fluid>
+        <Row>
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
             {renderNewsByTopic("top stories", topStories, "top-stories")}
             {comps}
-        </Masonry>
-      </Row>
-    </Container>);
+          </Masonry>
+        </Row>
+      </Container>
+    );
   }
 
   function extractTopStories(news: any) {
@@ -83,7 +94,7 @@ function App() {
       const newsByTopic = news[topic];
       restOfTheNews[topic] = [];
       newsByTopic.forEach((newsItem: any) => {
-        if(newsItem.rating >= 7) {
+        if (newsItem.rating >= 7) {
           topStories.push(newsItem);
         } else {
           restOfTheNews[topic].push(newsItem);
@@ -92,7 +103,9 @@ function App() {
     });
     return {
       restOfTheNews,
-      topStories: topStories.sort((a: any, b: any) => { return b.rating - a.rating; })
+      topStories: topStories.sort((a: any, b: any) => {
+        return b.rating - a.rating;
+      }),
     };
   }
 
