@@ -6,6 +6,7 @@ const NEWS_API_URL = `http://mh7.pw:5001/get-news/`;
 
 function App() {
   const [news, setNews] = useState();
+  const [topStories, setTopStories] = useState([]);
 
   async function getNews() {
     console.log("Calling news api");
@@ -52,9 +53,7 @@ function App() {
     return (<Container fluid>
       <Row>
         <Col md={8}>
-          <div className="news-container">
-            <h5>TOP STORIES</h5>
-          </div>
+          {renderNewsByTopic("top stories", topStories)}
         </Col>
         <Col md={4}>
           {comps}
@@ -63,9 +62,31 @@ function App() {
     </Container>);
   }
 
+  function extractTopStories(news: any) {
+    let restOfTheNews: any = {};
+    const topStories: any = [];
+    Object.keys(news).forEach((topic) => {
+      const newsByTopic = news[topic];
+      restOfTheNews[topic] = [];
+      newsByTopic.forEach((newsItem: any) => {
+        if(newsItem.rating >= 7) {
+          topStories.push(newsItem);
+        } else {
+          restOfTheNews[topic].push(newsItem);
+        }
+      });
+    });
+    return {
+      restOfTheNews,
+      topStories
+    };
+  }
+
   async function fetchNews() {
     const news = await getNews();
-    setNews(news);
+    const { restOfTheNews, topStories } = extractTopStories(news);
+    setNews(restOfTheNews);
+    setTopStories(topStories);
   }
 
   useEffect(() => {
