@@ -68,7 +68,7 @@ function App() {
     const breakpointColumnsObj = {
       default: 4,
       1600: 3,
-      1200: 2,
+      1000: 2,
       500: 1,
     };
     return (
