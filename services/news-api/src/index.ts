@@ -73,7 +73,7 @@ function curateModeratedNewsItem(newsListItem: any): NewsListItem {
 
 function sortModeratedNewsList(moderatedNewsList: any) {
   return moderatedNewsList.sort((a: any, b: any) => {
-    return a.rating - b.rating;
+    return b.rating - a.rating;
   });
 }
 

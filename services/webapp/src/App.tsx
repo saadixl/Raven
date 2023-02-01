@@ -84,7 +84,7 @@ function App() {
     });
     return {
       restOfTheNews,
-      topStories
+      topStories: topStories.sort((a: any, b: any) => { return b.rating - a.rating; })
     };
   }
 
