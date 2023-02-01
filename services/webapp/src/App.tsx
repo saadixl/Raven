@@ -27,11 +27,11 @@ function App() {
     return (<code className={"rating-value " + ratingClassName}>{rating}</code>);
   }
 
-  function renderNewsByTopic(topic: String, newsItems: any) {
+  function renderNewsByTopic(topic: String, newsItems: any, additionalClass: string) {
     const newsItemsComps = newsItems.map((newsItem: any) => {
       const { title, url, rating } = newsItem;
       return (
-        <li className="news-item">
+        <li className={"news-item " + additionalClass}>
           <Rating rating={rating} />{" "}
           <a className="news-url" href={url} target="__blank">
             {title}
@@ -41,7 +41,7 @@ function App() {
     });
     return (
       <div className="news-container">
-        <h5>{topic.toUpperCase()}</h5>
+        <h5 className="topic-title">{topic.toUpperCase()}</h5>
         <ul className="news-item-container">{newsItemsComps}</ul>
       </div>
     );
@@ -54,7 +54,7 @@ function App() {
     const comps: any = [];
     Object.keys(news).forEach((topic) => {
       const newsByTopic = news[topic];
-      const newsByTopicComp = renderNewsByTopic(topic, newsByTopic);
+      const newsByTopicComp = renderNewsByTopic(topic, newsByTopic, "rest-of-the-stories");
       comps.push(newsByTopicComp);
     });
     return (<Container fluid>
@@ -63,7 +63,7 @@ function App() {
           breakpointCols={3}
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column">
-            {renderNewsByTopic("top stories", topStories)}
+            {renderNewsByTopic("top stories", topStories, "top-stories")}
             {comps}
         </Masonry>
       </Row>
@@ -100,8 +100,6 @@ function App() {
   useEffect(() => {
     fetchNews();
   }, []);
-
-  console.log("news", news);
 
   return <div className="App">{renderNews(news)}</div>;
 }
