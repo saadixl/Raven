@@ -26,7 +26,7 @@ function App() {
     return (<code className={"rating-value " + ratingClassName}>{rating}</code>);
   }
 
-  function renderNewsByTopic(topic: String, newsItems: any) {
+  function renderNewsByTopic(topic: String, newsItems: any, colWidth = 4) {
     const newsItemsComps = newsItems.map((newsItem: any) => {
       const { title, url, rating } = newsItem;
       return (
@@ -39,10 +39,12 @@ function App() {
       );
     });
     return (
-      <div className="news-container">
-        <h5>{topic.toUpperCase()}</h5>
-        <ul className="news-item-container">{newsItemsComps}</ul>
-      </div>
+      <Col md={colWidth}>
+        <div className="news-container">
+          <h5>{topic.toUpperCase()}</h5>
+          <ul className="news-item-container">{newsItemsComps}</ul>
+        </div>
+      </Col>
     );
   }
 
@@ -58,12 +60,8 @@ function App() {
     });
     return (<Container fluid>
       <Row>
-        <Col md={8}>
-          {renderNewsByTopic("top stories", topStories)}
-        </Col>
-        <Col md={4}>
-          {comps}
-        </Col>
+        {renderNewsByTopic("top stories", topStories, 8)}
+        {comps}
       </Row>
     </Container>);
   }
