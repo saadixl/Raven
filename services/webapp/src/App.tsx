@@ -20,12 +20,18 @@ function App() {
     }
   }
 
+  function Rating(props: any) {
+    const { rating } = props;
+    const ratingClassName = rating >= 7 ? 'top-rated' : 'not-top-rated';
+    return (<code className={"rating-value " + ratingClassName}>{rating}</code>);
+  }
+
   function renderNewsByTopic(topic: String, newsItems: any) {
     const newsItemsComps = newsItems.map((newsItem: any) => {
       const { title, url, rating } = newsItem;
       return (
         <li className="news-item">
-          <code className="rating-value">{rating}</code>{" "}
+          <Rating rating={rating} />{" "}
           <a className="news-url" href={url} target="__blank">
             {title}
           </a>
