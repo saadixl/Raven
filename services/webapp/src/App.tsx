@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 import { Container, Row, Col } from 'react-bootstrap';
+import Masonry from 'react-masonry-css';
 const NEWS_API_URL = `http://mh7.pw:5001/get-news/`;
 
 function App() {
@@ -26,7 +27,7 @@ function App() {
     return (<code className={"rating-value " + ratingClassName}>{rating}</code>);
   }
 
-  function renderNewsByTopic(topic: String, newsItems: any, colWidth = 4) {
+  function renderNewsByTopic(topic: String, newsItems: any) {
     const newsItemsComps = newsItems.map((newsItem: any) => {
       const { title, url, rating } = newsItem;
       return (
@@ -39,12 +40,10 @@ function App() {
       );
     });
     return (
-      <Col md={colWidth}>
-        <div className="news-container">
-          <h5>{topic.toUpperCase()}</h5>
-          <ul className="news-item-container">{newsItemsComps}</ul>
-        </div>
-      </Col>
+      <div className="news-container">
+        <h5>{topic.toUpperCase()}</h5>
+        <ul className="news-item-container">{newsItemsComps}</ul>
+      </div>
     );
   }
 
@@ -60,8 +59,13 @@ function App() {
     });
     return (<Container fluid>
       <Row>
-        {renderNewsByTopic("top stories", topStories, 8)}
-        {comps}
+        <Masonry
+          breakpointCols={3}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column">
+            {renderNewsByTopic("top stories", topStories)}
+            {comps}
+        </Masonry>
       </Row>
     </Container>);
   }
