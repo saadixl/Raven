@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import axios from "axios";
+import { Container, Row, Col } from 'react-bootstrap';
 const NEWS_API_URL = `http://mh7.pw:5001/get-news/`;
 
 function App() {
@@ -23,18 +23,18 @@ function App() {
     const newsItemsComps = newsItems.map((newsItem: any) => {
       const { title, url, rating } = newsItem;
       return (
-        <li>
-          <code>{rating}</code>{" "}
-          <a href={url} target="__blank">
+        <li className="news-item">
+          <code className="rating-value">{rating}</code>{" "}
+          <a className="news-url" href={url} target="__blank">
             {title}
           </a>
         </li>
       );
     });
     return (
-      <div>
-        <h3>{topic}</h3>
-        <ul>{newsItemsComps}</ul>
+      <div className="news-container">
+        <h5>{topic.toUpperCase()}</h5>
+        <ul className="news-item-container">{newsItemsComps}</ul>
       </div>
     );
   }
@@ -49,7 +49,18 @@ function App() {
       const newsByTopicComp = renderNewsByTopic(topic, newsByTopic);
       comps.push(newsByTopicComp);
     });
-    return <div>{comps}</div>;
+    return (<Container fluid>
+      <Row>
+        <Col md={8}>
+          <div className="news-container">
+            <h5>TOP STORIES</h5>
+          </div>
+        </Col>
+        <Col md={4}>
+          {comps}
+        </Col>
+      </Row>
+    </Container>);
   }
 
   async function fetchNews() {
