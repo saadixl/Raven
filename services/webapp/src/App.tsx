@@ -57,10 +57,16 @@ function App() {
       const newsByTopicComp = renderNewsByTopic(topic, newsByTopic, "rest-of-the-stories");
       comps.push(newsByTopicComp);
     });
+    const breakpointColumnsObj = {
+      default: 4,
+      1100: 3,
+      700: 2,
+      500: 1
+    };
     return (<Container fluid>
       <Row>
         <Masonry
-          breakpointCols={3}
+          breakpointCols={breakpointColumnsObj}
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column">
             {renderNewsByTopic("top stories", topStories, "top-stories")}
