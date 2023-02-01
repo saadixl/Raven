@@ -67,8 +67,8 @@ function App() {
     });
     const breakpointColumnsObj = {
       default: 4,
-      1100: 3,
-      700: 2,
+      1600: 3,
+      1200: 2,
       500: 1,
     };
     return (
