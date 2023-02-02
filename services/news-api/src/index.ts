@@ -95,11 +95,7 @@ async function moderateNews(
   return sortModeratedNewsList(moderatedNewsList);
 }
 
-app.get("/", async (req: any, res: any) => {
-  res.send("Hello, world from news-api");
-});
-
-app.get("/get-news", async (req: any, res: any) => {
+async function getModeratedNews() {
   let moderatedNews: any = {};
   const moderatedNewsCached = await getCache(MODERATED_NEWS_CACHE_KEY);
   if (moderatedNewsCached) {
@@ -121,7 +117,15 @@ app.get("/get-news", async (req: any, res: any) => {
       MODERATED_NEWS_CACHE_EXPIRY_MS
     );
   }
+  return moderatedNews;
+}
 
+app.get("/", async (req: any, res: any) => {
+  res.send("Hello, world from news-api");
+});
+
+app.get("/get-news", async (req: any, res: any) => {
+  const moderatedNews: any = await getModeratedNews();
   res.send(JSON.stringify(moderatedNews, null, 4));
 });
 
