@@ -1,6 +1,9 @@
 version: "3.3"
 services:
   news-api:
+    depends_on:
+      - "redis"
+      - "openai-api"
     build: services/news-api
     ports:
       - "5001:5001"
@@ -11,8 +14,12 @@ services:
     environment:
       - OPEN_AI_API_KEY=${OPEN_AI_API_KEY}
   webapp:
+    depends_on:
+      - "news-api"
     build: services/webapp
     ports:
       - "5005:5005"
     environment:
       - NEWS_API_DOMAIN=${NEWS_API_DOMAIN}
+  redis:
+        image: "redis:alpine"

@@ -1,4 +1,5 @@
 import axios from "axios";
+const { getCache, setCache } = require('./cache');
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -11,8 +12,9 @@ const OPENAI_API_URL = "http://openai-api:5002/test/moderation/";
 app.use(bodyParser.json());
 
 const TOPICS = ["world", "singapore", "dhaka", "bangladesh"];
-
+const MODERATED_NEWS_CACHE_KEY = "moderated-news-cache-key";
 const NEWS_LIMIT_PER_QUERY = 10;
+const MODERATED_NEWS_CACHE_EXPIRY_MS = 60 * 60 * 1;
 
 type NewsListItem = {
   title: String;
@@ -98,15 +100,24 @@ app.get("/", async (req: any, res: any) => {
 });
 
 app.get("/get-news", async (req: any, res: any) => {
-  const news = await fetchNews(TOPICS);
   let moderatedNews: any = {};
-  const topics = Object.keys(news);
-  const promises = topics.map(async (topic: String) => {
-    const newsListByTopic: any = news[topic as keyof Object];
-    const moderatedNewsListByTopic = await moderateNews(newsListByTopic);
-    moderatedNews[topic as keyof Object] = moderatedNewsListByTopic;
-  });
-  await Promise.all(promises);
+  const moderatedNewsCached = await getCache(MODERATED_NEWS_CACHE_KEY);
+  if(moderatedNewsCached) {
+    console.log("Serving from cache");
+    moderatedNews = JSON.parse(moderatedNewsCached);
+  } else {
+    console.log("Serving directly");
+    const news = await fetchNews(TOPICS);
+    const topics = Object.keys(news);
+    const promises = topics.map(async (topic: String) => {
+      const newsListByTopic: any = news[topic as keyof Object];
+      const moderatedNewsListByTopic = await moderateNews(newsListByTopic);
+      moderatedNews[topic as keyof Object] = moderatedNewsListByTopic;
+    });
+    await Promise.all(promises);
+    await setCache(MODERATED_NEWS_CACHE_KEY, JSON.stringify(moderatedNews), MODERATED_NEWS_CACHE_EXPIRY_MS);
+  }
+  
   res.send(JSON.stringify(moderatedNews, null, 4));
 });
 
