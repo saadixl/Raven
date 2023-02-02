@@ -1,5 +1,5 @@
 import axios from "axios";
-const { getCache, setCache } = require('./cache');
+const { getCache, setCache } = require("./cache");
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -102,7 +102,7 @@ app.get("/", async (req: any, res: any) => {
 app.get("/get-news", async (req: any, res: any) => {
   let moderatedNews: any = {};
   const moderatedNewsCached = await getCache(MODERATED_NEWS_CACHE_KEY);
-  if(moderatedNewsCached) {
+  if (moderatedNewsCached) {
     console.log("Serving from cache");
     moderatedNews = JSON.parse(moderatedNewsCached);
   } else {
@@ -115,9 +115,13 @@ app.get("/get-news", async (req: any, res: any) => {
       moderatedNews[topic as keyof Object] = moderatedNewsListByTopic;
     });
     await Promise.all(promises);
-    await setCache(MODERATED_NEWS_CACHE_KEY, JSON.stringify(moderatedNews), MODERATED_NEWS_CACHE_EXPIRY_MS);
+    await setCache(
+      MODERATED_NEWS_CACHE_KEY,
+      JSON.stringify(moderatedNews),
+      MODERATED_NEWS_CACHE_EXPIRY_MS
+    );
   }
-  
+
   res.send(JSON.stringify(moderatedNews, null, 4));
 });
 
