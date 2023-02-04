@@ -10,7 +10,7 @@ const selectOptions = [
   { value: 'world', label: 'world' },
   { value: 'singapore', label: 'singapore' },
   { value: 'bangladesh', label: 'bangladesh' },
-  { value: 'dhaka', label: 'Strawberry' },
+  { value: 'dhaka', label: 'dhaka' },
 ];
 
 function App() {
@@ -133,6 +133,7 @@ function App() {
       </Col>
       <Col md={{ span: 8, offset: 2 }}>
         <CreatableSelect
+          defaultValue={[selectOptions[0], selectOptions[1], selectOptions[2], selectOptions[3]]}
           theme={theme => ({
             ...theme,
             background: "#023950",
