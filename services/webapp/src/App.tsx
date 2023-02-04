@@ -61,7 +61,7 @@ function App() {
 
   function renderNews(news: any) {
     if (!news) {
-      return <p>news loading..</p>;
+      return <p className="loading-text">news loading..</p>;
     }
     const comps: any = [];
     Object.keys(news).forEach((topic) => {
