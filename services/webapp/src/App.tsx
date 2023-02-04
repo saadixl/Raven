@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
-import { Container } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import Masonry from "react-masonry-css";
+import CreatableSelect from 'react-select/creatable';
 const NEWS_API_URL = `http://mh7.pw:5001/get-news/`;
+
+const selectOptions = [
+  { value: 'world', label: 'world' },
+  { value: 'singapore', label: 'singapore' },
+  { value: 'bangladesh', label: 'bangladesh' },
+  { value: 'dhaka', label: 'Strawberry' },
+];
 
 function App() {
   const [news, setNews] = useState();
@@ -118,7 +126,29 @@ function App() {
     fetchNews();
   }, []);
 
-  return <div className="App">{renderNews(news)}</div>;
+  return <div className="App">
+    <Row>
+      <Col className="logo-container" md={12}>
+        <p>Raven</p>
+      </Col>
+      <Col md={{ span: 8, offset: 2 }}>
+        <CreatableSelect
+          theme={theme => ({
+            ...theme,
+            background: "#023950",
+            borderRadius: 5,
+            colors: {
+              ...theme.colors,
+              text: "white",
+              primary25: "orange",
+              primary: "orange",
+            }
+          })}
+          placeholder="Type topics" isMulti options={selectOptions} />
+      </Col>
+    </Row>
+    {renderNews(news)}
+  </div>;
 }
 
 export default App;
