@@ -4,7 +4,7 @@ import axios from "axios";
 import { Container, Row, Col } from "react-bootstrap";
 import Masonry from "react-masonry-css";
 import CreatableSelect from "react-select/creatable";
-const newsApiDomain = "http://localhost:5001";
+const newsApiDomain = "http://mh7.pw:5001";
 const GET_NEWS_API_URL = `${newsApiDomain}/get-news/`;
 const GET_TOPICS_API_URL = `${newsApiDomain}/get-topics/`;
 const SET_TOPICS_API_URL = `${newsApiDomain}/set-topics/`;
@@ -171,6 +171,7 @@ function App() {
     ];
     setSelectedOptions(newSelectedOptions);
     setTopics(stipSelectOptions(newSelectedOptions));
+    window.location.reload();
   }
 
   async function fetchNews() {
