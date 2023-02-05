@@ -13,8 +13,10 @@ app.use(bodyParser.json());
 
 const TOPICS = ["world", "singapore", "dhaka", "bangladesh"];
 const MODERATED_NEWS_CACHE_KEY = "moderated-news-cache-key";
+const NEWS_TOPICS_CACHE_KEY = "news-topics-cache-key";
 const NEWS_LIMIT_PER_QUERY = 10;
 const MODERATED_NEWS_CACHE_EXPIRY_MS = 60 * 60 * 1;
+const NEWS_TOPICS_CACHE_EXPIRY_MS = 60 * 60 * 24 * 30;
 
 type NewsListItem = {
   title: String;
@@ -120,6 +122,22 @@ async function getModeratedNews() {
   return moderatedNews;
 }
 
+async function getTopicsFromCache() {
+  const topicsString = await getCache(NEWS_TOPICS_CACHE_KEY);
+  if(!topicsString) {
+    return [];
+  }
+  return JSON.parse(topicsString);
+}
+
+async function setTopicsFromCache(topics: Array<string>) {
+  return setCache(
+    NEWS_TOPICS_CACHE_KEY,
+    JSON.stringify(topics),
+    NEWS_TOPICS_CACHE_EXPIRY_MS
+  );
+}
+
 app.get("/", async (req: any, res: any) => {
   res.send("Hello, world from news-api");
 });
@@ -127,6 +145,17 @@ app.get("/", async (req: any, res: any) => {
 app.get("/get-news", async (req: any, res: any) => {
   const moderatedNews: any = await getModeratedNews();
   res.send(JSON.stringify(moderatedNews, null, 4));
+});
+
+app.get("/get-topics", async (req: any, res: any) => {
+  const topics = await getTopicsFromCache();
+  res.send(topics);
+});
+
+app.post("/set-topics", async (req: any, res: any) => {
+  const { topics } = req.body;
+  await setTopicsFromCache(topics);
+  res.send('OK');
 });
 
 app.listen(port, () => {
