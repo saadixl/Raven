@@ -3,18 +3,11 @@ import "./App.css";
 import axios from "axios";
 import { Container, Row, Col } from "react-bootstrap";
 import Masonry from "react-masonry-css";
-import CreatableSelect from 'react-select/creatable';
-const newsApiDomain = 'http://localhost:5001';
+import CreatableSelect from "react-select/creatable";
+const newsApiDomain = "http://localhost:5001";
 const GET_NEWS_API_URL = `${newsApiDomain}/get-news/`;
 const GET_TOPICS_API_URL = `${newsApiDomain}/get-topics/`;
 const SET_TOPICS_API_URL = `${newsApiDomain}/set-topics/`;
-
-// const selectOptions = [
-//   { value: 'world', label: 'world' },
-//   { value: 'singapore', label: 'singapore' },
-//   { value: 'bangladesh', label: 'bangladesh' },
-//   { value: 'dhaka', label: 'dhaka' },
-// ];
 
 type SelectOption = {
   value: String;
@@ -25,6 +18,9 @@ function App() {
   const [news, setNews] = useState();
   const [topStories, setTopStories] = useState([]);
   const [selectOptions, setSelectOptions] = useState<Array<SelectOption>>([]);
+  const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>(
+    []
+  );
 
   async function getNews() {
     console.log("Calling news api");
@@ -39,13 +35,32 @@ function App() {
   }
 
   async function getTopics() {
-    console.log("Calling topics api");
+    console.log("Calling get topics api");
     try {
       const response = await axios(GET_TOPICS_API_URL);
       console.log("topics response", response.data);
       const topics: Array<string> = response.data;
       const newSelectedOptions = formSelectOptions(topics);
-      setSelectOptions(newSelectedOptions);
+      setSelectedOptions(newSelectedOptions);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function setTopics(topics: Array<string>) {
+    console.log("Calling set topics api");
+    try {
+      await axios.post(
+        SET_TOPICS_API_URL,
+        {
+          topics,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     } catch (error) {
       console.log(error);
     }
@@ -54,6 +69,12 @@ function App() {
   function formSelectOptions(topics: Array<string>) {
     return topics.map((topic: string) => {
       return { value: topic, label: topic };
+    });
+  }
+
+  function stipSelectOptions(selectOptions: any) {
+    return selectOptions.map((option: any) => {
+      return option.value;
     });
   }
 
@@ -110,13 +131,13 @@ function App() {
     return (
       <Container fluid>
         <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
-          >
-            {renderNewsByTopic("top stories", topStories, "top-stories")}
-            {comps}
-          </Masonry>
+          breakpointCols={breakpointColumnsObj}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        >
+          {renderNewsByTopic("top stories", topStories, "top-stories")}
+          {comps}
+        </Masonry>
       </Container>
     );
   }
@@ -143,6 +164,15 @@ function App() {
     };
   }
 
+  function handleSelectCreate(inputValue: string) {
+    const newSelectedOptions = [
+      ...selectedOptions,
+      { value: inputValue, label: inputValue },
+    ];
+    setSelectedOptions(newSelectedOptions);
+    setTopics(stipSelectOptions(newSelectedOptions));
+  }
+
   async function fetchNews() {
     const news = await getNews();
     const { restOfTheNews, topStories } = extractTopStories(news);
@@ -155,32 +185,35 @@ function App() {
     fetchNews();
   }, []);
 
-  console.log("selectOptions", selectOptions);
-
-  return <div className="App">
-    <Row>
-      <Col className="logo-container" md={12}>
-        <p>Raven</p>
-      </Col>
-      <Col md={{ span: 8, offset: 2 }}>
-        <CreatableSelect
-          value={selectOptions}
-          theme={theme => ({
-            ...theme,
-            background: "#023950",
-            borderRadius: 5,
-            colors: {
-              ...theme.colors,
-              text: "white",
-              primary25: "orange",
-              primary: "orange",
-            }
-          })}
-          placeholder="Type topics" isMulti options={selectOptions} />
-      </Col>
-    </Row>
-    {renderNews(news)}
-  </div>;
+  return (
+    <div className="App">
+      <Row>
+        <Col className="logo-container" md={12}>
+          <p>Raven</p>
+        </Col>
+        <Col md={{ span: 8, offset: 2 }}>
+          <CreatableSelect
+            value={selectedOptions}
+            onCreateOption={handleSelectCreate}
+            theme={(theme) => ({
+              ...theme,
+              background: "#023950",
+              borderRadius: 5,
+              colors: {
+                ...theme.colors,
+                text: "white",
+                primary25: "orange",
+                primary: "orange",
+              },
+            })}
+            placeholder="Type topics"
+            isMulti
+          />
+        </Col>
+      </Row>
+      {renderNews(news)}
+    </div>
+  );
 }
 
 export default App;
