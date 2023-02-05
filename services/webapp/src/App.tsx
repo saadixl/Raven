@@ -4,29 +4,57 @@ import axios from "axios";
 import { Container, Row, Col } from "react-bootstrap";
 import Masonry from "react-masonry-css";
 import CreatableSelect from 'react-select/creatable';
-const NEWS_API_URL = `http://mh7.pw:5001/get-news/`;
+const newsApiDomain = 'http://localhost:5001';
+const GET_NEWS_API_URL = `${newsApiDomain}/get-news/`;
+const GET_TOPICS_API_URL = `${newsApiDomain}/get-topics/`;
+const SET_TOPICS_API_URL = `${newsApiDomain}/set-topics/`;
 
-const selectOptions = [
-  { value: 'world', label: 'world' },
-  { value: 'singapore', label: 'singapore' },
-  { value: 'bangladesh', label: 'bangladesh' },
-  { value: 'dhaka', label: 'dhaka' },
-];
+// const selectOptions = [
+//   { value: 'world', label: 'world' },
+//   { value: 'singapore', label: 'singapore' },
+//   { value: 'bangladesh', label: 'bangladesh' },
+//   { value: 'dhaka', label: 'dhaka' },
+// ];
+
+type SelectOption = {
+  value: String;
+  label: String;
+};
 
 function App() {
   const [news, setNews] = useState();
   const [topStories, setTopStories] = useState([]);
+  const [selectOptions, setSelectOptions] = useState<Array<SelectOption>>([]);
 
   async function getNews() {
     console.log("Calling news api");
     try {
-      const response = await axios(NEWS_API_URL);
-      console.log("response", response);
+      const response = await axios(GET_NEWS_API_URL);
+      console.log("news response", response.data);
       return response.data;
     } catch (error) {
       console.log(error);
       return {};
     }
+  }
+
+  async function getTopics() {
+    console.log("Calling topics api");
+    try {
+      const response = await axios(GET_TOPICS_API_URL);
+      console.log("topics response", response.data);
+      const topics: Array<string> = response.data;
+      const newSelectedOptions = formSelectOptions(topics);
+      setSelectOptions(newSelectedOptions);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function formSelectOptions(topics: Array<string>) {
+    return topics.map((topic: string) => {
+      return { value: topic, label: topic };
+    });
   }
 
   function Rating(props: any) {
@@ -123,8 +151,11 @@ function App() {
   }
 
   useEffect(() => {
+    getTopics();
     fetchNews();
   }, []);
+
+  console.log("selectOptions", selectOptions);
 
   return <div className="App">
     <Row>
@@ -133,7 +164,7 @@ function App() {
       </Col>
       <Col md={{ span: 8, offset: 2 }}>
         <CreatableSelect
-          defaultValue={[selectOptions[0], selectOptions[1], selectOptions[2], selectOptions[3]]}
+          value={selectOptions}
           theme={theme => ({
             ...theme,
             background: "#023950",
