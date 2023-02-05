@@ -1,5 +1,5 @@
 import axios from "axios";
-const { getCache, setCache } = require("./cache");
+const { getCache, setCache, delCache } = require("./cache");
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -155,6 +155,7 @@ app.get("/get-topics", async (req: any, res: any) => {
 app.post("/set-topics", async (req: any, res: any) => {
   const { topics } = req.body;
   await setTopicsFromCache(topics);
+  await delCache(MODERATED_NEWS_CACHE_KEY);
   res.send('OK');
 });
 
