@@ -11,7 +11,6 @@ const port = 5001;
 const OPENAI_API_URL = "http://openai-api:5002/test/moderation/";
 app.use(bodyParser.json());
 
-const TOPICS = ["world", "singapore", "dhaka", "bangladesh"];
 const MODERATED_NEWS_CACHE_KEY = "moderated-news-cache-key";
 const NEWS_TOPICS_CACHE_KEY = "news-topics-cache-key";
 const NEWS_LIMIT_PER_QUERY = 10;
@@ -105,7 +104,8 @@ async function getModeratedNews() {
     moderatedNews = JSON.parse(moderatedNewsCached);
   } else {
     console.log("Serving directly");
-    const news = await fetchNews(TOPICS);
+    const savedTopics = await getTopicsFromCache();
+    const news = await fetchNews(savedTopics);
     const topics = Object.keys(news);
     const promises = topics.map(async (topic: String) => {
       const newsListByTopic: any = news[topic as keyof Object];
@@ -125,7 +125,7 @@ async function getModeratedNews() {
 async function getTopicsFromCache() {
   const topicsString = await getCache(NEWS_TOPICS_CACHE_KEY);
   if(!topicsString) {
-    return [];
+    return ['world'];
   }
   return JSON.parse(topicsString);
 }
