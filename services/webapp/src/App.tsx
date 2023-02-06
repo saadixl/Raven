@@ -17,7 +17,6 @@ type SelectOption = {
 function App() {
   const [news, setNews] = useState();
   const [topStories, setTopStories] = useState([]);
-  const [selectOptions, setSelectOptions] = useState<Array<SelectOption>>([]);
   const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>(
     []
   );
