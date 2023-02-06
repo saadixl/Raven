@@ -174,6 +174,12 @@ function App() {
     window.location.reload();
   }
 
+  function handleSelectChange(newSelectedOptions: any) {
+    setSelectedOptions(newSelectedOptions);
+    setTopics(stipSelectOptions(newSelectedOptions));
+    window.location.reload();
+  }
+
   async function fetchNews() {
     const news = await getNews();
     const { restOfTheNews, topStories } = extractTopStories(news);
@@ -196,6 +202,7 @@ function App() {
           <CreatableSelect
             value={selectedOptions}
             onCreateOption={handleSelectCreate}
+            onChange={handleSelectChange}
             theme={(theme) => ({
               ...theme,
               background: "#023950",
