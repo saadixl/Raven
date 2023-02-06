@@ -164,19 +164,19 @@ function App() {
     };
   }
 
-  function handleSelectCreate(inputValue: string) {
+  async function handleSelectCreate(inputValue: string) {
     const newSelectedOptions = [
       ...selectedOptions,
       { value: inputValue, label: inputValue },
     ];
     setSelectedOptions(newSelectedOptions);
-    setTopics(stipSelectOptions(newSelectedOptions));
+    await setTopics(stipSelectOptions(newSelectedOptions));
     window.location.reload();
   }
 
-  function handleSelectChange(newSelectedOptions: any) {
+  async function handleSelectChange(newSelectedOptions: any) {
     setSelectedOptions(newSelectedOptions);
-    setTopics(stipSelectOptions(newSelectedOptions));
+    await setTopics(stipSelectOptions(newSelectedOptions));
     window.location.reload();
   }
 
