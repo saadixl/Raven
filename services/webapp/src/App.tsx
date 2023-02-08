@@ -4,6 +4,7 @@ import axios from "axios";
 import { Container, Row, Col } from "react-bootstrap";
 import Masonry from "react-masonry-css";
 import CreatableSelect from "react-select/creatable";
+import uuid from "react-uuid";
 const newsApiDomain = "http://mh7.pw:5001";
 const GET_NEWS_API_URL = `${newsApiDomain}/get-news/`;
 const GET_TOPICS_API_URL = `${newsApiDomain}/get-topics/`;
@@ -21,10 +22,29 @@ function App() {
     []
   );
 
+  function getBrowserId() {
+    let browserId = localStorage.getItem("browserId");
+    if (!browserId) {
+      browserId = uuid();
+      localStorage.setItem("browserId", browserId);
+    }
+    return browserId;
+  }
+
   async function getNews() {
     console.log("Calling news api");
     try {
-      const response = await axios(GET_NEWS_API_URL);
+      const response = await axios.post(
+        GET_NEWS_API_URL,
+        {
+          browserId: getBrowserId(),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log("news response", response.data);
       return response.data;
     } catch (error) {
@@ -36,7 +56,17 @@ function App() {
   async function getTopics() {
     console.log("Calling get topics api");
     try {
-      const response = await axios(GET_TOPICS_API_URL);
+      const response = await axios.post(
+        GET_TOPICS_API_URL,
+        {
+          browserId: getBrowserId(),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log("topics response", response.data);
       const topics: Array<string> = response.data;
       const newSelectedOptions = formSelectOptions(topics);
@@ -53,6 +83,7 @@ function App() {
         SET_TOPICS_API_URL,
         {
           topics,
+          browserId: getBrowserId(),
         },
         {
           headers: {

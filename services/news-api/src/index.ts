@@ -27,6 +27,14 @@ type Moderation = {
   rating?: Number;
 };
 
+function getModeratedNewsByTopicCacheKey(topic: string) {
+  return `moderated-news-${topic}`;
+}
+
+function getTopicsCacheKey(browserId: string) {
+  return `news-topic-${browserId}`;
+}
+
 function getRssUrl(query: String) {
   return `https://news.google.com/rss/search?q=${query}&hl=en-SG&gl=SG&ceid=SG:en`;
 }
@@ -43,20 +51,6 @@ async function getFeedForQuery(query: String, n: Number) {
     );
   }
   return result.slice(0, n);
-}
-
-async function fetchNews(topics: Array<string>) {
-  const news = {},
-    promises: any = [];
-  topics.forEach((query) => {
-    promises.push(
-      getFeedForQuery(query, NEWS_LIMIT_PER_QUERY).then((feed) => {
-        news[query as keyof Object] = feed;
-      })
-    );
-  });
-  await Promise.all(promises);
-  return news;
 }
 
 async function moderate(input: String): Promise<Moderation> {
@@ -80,11 +74,9 @@ function sortModeratedNewsList(moderatedNewsList: any) {
   });
 }
 
-async function moderateNews(
-  newsList: Array<NewsListItem>
-): Promise<Array<NewsListItem>> {
+async function moderateNews(newsList: any) {
   let moderatedNewsList: Array<NewsListItem> = [];
-  const promises = newsList.map(async (newsListItem) => {
+  const promises = newsList.map(async (newsListItem: any) => {
     const { title } = newsListItem;
     const { rating } = await moderate(title);
     return moderatedNewsList.push({
@@ -96,43 +88,54 @@ async function moderateNews(
   return sortModeratedNewsList(moderatedNewsList);
 }
 
-async function getModeratedNews() {
-  let moderatedNews: any = {};
-  const moderatedNewsCached = await getCache(MODERATED_NEWS_CACHE_KEY);
-  if (moderatedNewsCached) {
-    console.log("Serving from cache");
-    moderatedNews = JSON.parse(moderatedNewsCached);
+async function getNewsByTopic(topic: string) {
+  return await getFeedForQuery(topic, NEWS_LIMIT_PER_QUERY);
+}
+
+async function getModeratedNewsListByTopic(topic: string) {
+  let moderatedNewsByTopic: any = {};
+  const cacheKeyByTopic = getModeratedNewsByTopicCacheKey(topic);
+  const moderatedNewsByTopicCached = await getCache(cacheKeyByTopic);
+  if (moderatedNewsByTopicCached) {
+    moderatedNewsByTopic = JSON.parse(moderatedNewsByTopicCached);
   } else {
-    console.log("Serving directly");
-    const savedTopics = await getTopicsFromCache();
-    const news = await fetchNews(savedTopics);
-    const topics = Object.keys(news);
-    const promises = topics.map(async (topic: String) => {
-      const newsListByTopic: any = news[topic as keyof Object];
-      const moderatedNewsListByTopic = await moderateNews(newsListByTopic);
-      moderatedNews[topic as keyof Object] = moderatedNewsListByTopic;
-    });
-    await Promise.all(promises);
+    // Get raw news by topic
+    const newsByTopic = await getNewsByTopic(topic);
+    // Moderate raw news news
+    moderatedNewsByTopic = await moderateNews(newsByTopic);
+    // Cache the moderated news
     await setCache(
-      MODERATED_NEWS_CACHE_KEY,
-      JSON.stringify(moderatedNews),
+      cacheKeyByTopic,
+      JSON.stringify(moderatedNewsByTopic),
       MODERATED_NEWS_CACHE_EXPIRY_MS
     );
   }
+  return moderatedNewsByTopic;
+}
+
+async function getModeratedNews(browserId: string) {
+  const cachedTopics = await getTopicsFromCache(browserId);
+  let moderatedNews: any = {};
+  const promises = cachedTopics.map(async (topic: any) => {
+    moderatedNews[topic as keyof Object] = await getModeratedNewsListByTopic(
+      topic
+    );
+  });
+  await Promise.all(promises);
   return moderatedNews;
 }
 
-async function getTopicsFromCache() {
-  const topicsString = await getCache(NEWS_TOPICS_CACHE_KEY);
-  if(!topicsString) {
-    return ['world'];
+async function getTopicsFromCache(browserId: string) {
+  const topicsString = await getCache(getTopicsCacheKey(browserId));
+  if (!topicsString) {
+    return ["world"];
   }
   return JSON.parse(topicsString);
 }
 
-async function setTopicsFromCache(topics: Array<string>) {
+async function setTopicsFromCache(topics: Array<string>, browserId: string) {
   return setCache(
-    NEWS_TOPICS_CACHE_KEY,
+    getTopicsCacheKey(browserId),
     JSON.stringify(topics),
     NEWS_TOPICS_CACHE_EXPIRY_MS
   );
@@ -142,21 +145,23 @@ app.get("/", async (req: any, res: any) => {
   res.send("Hello, world from news-api");
 });
 
-app.get("/get-news", async (req: any, res: any) => {
-  const moderatedNews: any = await getModeratedNews();
+app.post("/get-news", async (req: any, res: any) => {
+  const { browserId } = req.body;
+  const moderatedNews: any = await getModeratedNews(browserId);
   res.send(JSON.stringify(moderatedNews, null, 4));
 });
 
-app.get("/get-topics", async (req: any, res: any) => {
-  const topics = await getTopicsFromCache();
+app.post("/get-topics", async (req: any, res: any) => {
+  const { browserId } = req.body;
+  const topics = await getTopicsFromCache(browserId);
   res.send(topics);
 });
 
 app.post("/set-topics", async (req: any, res: any) => {
-  const { topics } = req.body;
-  await setTopicsFromCache(topics);
+  const { topics, browserId } = req.body;
+  await setTopicsFromCache(topics, browserId);
   await delCache(MODERATED_NEWS_CACHE_KEY);
-  res.send('OK');
+  res.send("OK");
 });
 
 app.listen(port, () => {
