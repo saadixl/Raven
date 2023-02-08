@@ -6,7 +6,7 @@ const redisClient = redis.createClient({
 });
 
 // Method to get cached data from redis
-const getCache = (key: any) => {
+export const getCache = (key: any) => {
   return new Promise((resolve, reject) => {
     redisClient.get(key, (err: any, reply: any) => {
       if (err) {
@@ -19,7 +19,7 @@ const getCache = (key: any) => {
 };
 
 // Method to set cached data in redis
-const setCache = (key: string, value: string, expiryInSec: number) => {
+export const setCache = (key: string, value: string, expiryInSec: number) => {
   return new Promise((resolve, reject) => {
     redisClient.set(key, value, "EX", expiryInSec, (err: any, reply: any) => {
       if (err) {
@@ -32,7 +32,7 @@ const setCache = (key: string, value: string, expiryInSec: number) => {
 };
 
 // Method to delete cached data from redis
-const delCache = (key: string) => {
+export const delCache = (key: string) => {
   return new Promise((resolve, reject) => {
     redisClient.del(key, (err: any, reply: any) => {
       if (err) {
@@ -42,10 +42,4 @@ const delCache = (key: string) => {
       }
     });
   });
-};
-
-module.exports = {
-  setCache,
-  getCache,
-  delCache,
 };
