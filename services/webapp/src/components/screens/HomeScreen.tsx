@@ -6,9 +6,11 @@ import type { SelectOption } from '../../types';
 import { getNews, getTopics, setTopics } from '../../tools/apis';
 import Header from '../others/Header';
 import Rating from '../others/Rating';
+import Loader from '../others/Loader';
 
 export default function HomeScreen() {
     const [news, setNews] = useState();
+    const [loading, setLoading] = useState(false);
     const [topStories, setTopStories] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>([]);
 
@@ -19,15 +21,17 @@ export default function HomeScreen() {
     }
 
     async function fetchNews() {
+        setLoading(true);
         const news = await getNews();
         const { restOfTheNews, topStories } = extractTopStories(news);
         setNews(restOfTheNews);
         setTopStories(topStories);
+        setLoading(false);
     }
 
     function renderNews(news: any) {
         if (!news) {
-            return <p className="loading-text">news loading..</p>;
+            return <></>
         }
         const comps: any = [];
         Object.keys(news).forEach((topic) => {
@@ -99,11 +103,15 @@ export default function HomeScreen() {
 
     useEffect(() => {
         fetchTopics();
+    }, []);
+
+    useEffect(() => {
         fetchNews();
     }, [selectedOptions]);
 
     return (
         <div className="App">
+            <Loader show={loading} />
             <Header
                 selectedOptions={selectedOptions}
                 handleSelectCreate={handleSelectCreate}
