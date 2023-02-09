@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import Masonry from "react-masonry-css";
-import { formSelectOptions, stipSelectOptions, extractTopStories } from '../../tools/utils';
+import { formSelectOptions, stripSelectOptions, extractTopStories } from '../../tools/utils';
 import type { SelectOption } from '../../types';
 import { getNews, getTopics, setTopics } from '../../tools/apis';
 import Header from '../others/Header';
@@ -88,21 +88,19 @@ export default function HomeScreen() {
             ...selectedOptions,
             { value: inputValue, label: inputValue },
         ];
+        await setTopics(stripSelectOptions(newSelectedOptions));
         setSelectedOptions(newSelectedOptions);
-        await setTopics(stipSelectOptions(newSelectedOptions));
-        window.location.reload();
     }
 
     async function handleSelectChange(newSelectedOptions: any) {
+        await setTopics(stripSelectOptions(newSelectedOptions));
         setSelectedOptions(newSelectedOptions);
-        await setTopics(stipSelectOptions(newSelectedOptions));
-        window.location.reload();
     }
 
     useEffect(() => {
         fetchTopics();
         fetchNews();
-    }, []);
+    }, [selectedOptions]);
 
     return (
         <div className="App">

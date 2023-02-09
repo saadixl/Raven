@@ -15,7 +15,7 @@ export function formSelectOptions(topics: Array<string>) {
     });
 }
 
-export function stipSelectOptions(selectOptions: any) {
+export function stripSelectOptions(selectOptions: any) {
     return selectOptions.map((option: any) => {
         return option.value;
     });
