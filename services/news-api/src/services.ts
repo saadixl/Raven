@@ -101,11 +101,16 @@ async function moderateNews(newsList: any) {
 }
 
 async function moderate(input: String): Promise<Moderation> {
-    const data = { input };
-    const response = await axios.post(OPENAI_API_URL, data, {
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    return response.data;
+    try {
+        const data = { input };
+        const response = await axios.post(OPENAI_API_URL, data, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.log('moderate method failed: ', error);
+        return { rating: -1 };
+    }
 }
