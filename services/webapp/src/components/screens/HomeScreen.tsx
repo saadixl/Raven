@@ -15,6 +15,7 @@ export default function HomeScreen() {
     const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>([]);
 
     async function fetchTopics() {
+        setLoading(true);
         const topics: Array<string> = await getTopics();
         const newSelectedOptions = formSelectOptions(topics);
         setSelectedOptions(newSelectedOptions);
