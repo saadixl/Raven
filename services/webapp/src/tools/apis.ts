@@ -44,10 +44,10 @@ export async function getTopics() {
             }
         );
         console.log("topics response", response.data);
-        return response.data;
+        return response.data || [];
     } catch (error) {
         console.log(error);
-        return;
+        return [];
     }
 }
 
