@@ -7,6 +7,7 @@ import { getNews, getTopics, setTopics } from '../../tools/apis';
 import Header from '../others/Header';
 import Rating from '../others/Rating';
 import Loader from '../others/Loader';
+import TsTopic from '../others/TsTopic';
 
 export default function HomeScreen() {
     const [news, setNews] = useState();
@@ -70,10 +71,11 @@ export default function HomeScreen() {
         additionalClass: string
     ) {
         const newsItemsComps = newsItems.map((newsItem: any) => {
-            const { title, url, rating } = newsItem;
+            const { title, url, rating, tsTopic } = newsItem;
+            const tsTopicComp = tsTopic ? <TsTopic topic={tsTopic} rating={rating} /> : null;
             return (
                 <li className={"news-item " + additionalClass}>
-                    <Rating rating={rating} />{" "}
+                    <Rating rating={rating} />{tsTopicComp}{" "}
                     <a className="news-url" href={url} target="__blank">
                         {title}
                     </a>

@@ -29,6 +29,7 @@ export function extractTopStories(news: any) {
         restOfTheNews[topic] = [];
         newsByTopic.forEach((newsItem: any) => {
             if (newsItem.rating >= 7) {
+                newsItem.tsTopic = topic;
                 topStories.push(newsItem);
             } else {
                 restOfTheNews[topic].push(newsItem);
