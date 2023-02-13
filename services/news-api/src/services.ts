@@ -4,6 +4,7 @@ import {
     NEWS_TOPICS_CACHE_EXPIRY_MS,
     MODERATED_NEWS_CACHE_EXPIRY_MS,
     OPENAI_API_URL,
+    NEWS_SLICE_PER_QUERY,
 } from './constants';
 import {
     getRssUrl,
@@ -82,7 +83,7 @@ async function getModeratedNewsListByTopic(topic: string) {
             MODERATED_NEWS_CACHE_EXPIRY_MS
         );
     }
-    return moderatedNewsByTopic;
+    return moderatedNewsByTopic.slice(0, NEWS_SLICE_PER_QUERY);
 }
 
 async function moderateNews(newsList: any) {
