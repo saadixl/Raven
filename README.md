@@ -1,2 +1,2 @@
 # Raven
-WIP AI powered project to curate and serve news. 
+A news curation and delivery project utilizing OpenAI technology.
