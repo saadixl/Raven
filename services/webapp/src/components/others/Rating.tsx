@@ -3,6 +3,6 @@ export default function Rating(props: any) {
     if(rating < 0) {
         return <></>;
     }
-    const ratingClassName = rating >= 7 ? "top-rated" : "not-top-rated";
+    const ratingClassName = rating >= 8 ? "top-rated" : ( rating === 7 ? "mid-rated" : "not-top-rated");
     return <code className={"rating-value " + ratingClassName}>{rating}</code>;
 }

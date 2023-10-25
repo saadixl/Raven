@@ -117,6 +117,10 @@ body {
     background-color: #2ecc71;
 }
 
+.mid-rated {
+    background-color: #fd7e14;
+}
+
 .loader {
     position: fixed;
     top: 0;
