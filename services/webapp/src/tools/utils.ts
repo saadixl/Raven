@@ -28,7 +28,7 @@ export function extractTopStories(news: any) {
         const newsByTopic = news[topic];
         restOfTheNews[topic] = [];
         newsByTopic.forEach((newsItem: any) => {
-            if (newsItem.rating >= 7) {
+            if (newsItem.rating >= 8) {
                 newsItem.tsTopic = topic;
                 topStories.push(newsItem);
             } else {
