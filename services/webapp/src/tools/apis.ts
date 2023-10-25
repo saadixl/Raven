@@ -8,7 +8,6 @@ const {
 } = require('../constants');
 
 export async function getNews() {
-    console.log("Calling news api");
     try {
         const response = await axios.post(
             GET_NEWS_API_URL,
@@ -21,7 +20,6 @@ export async function getNews() {
                 },
             }
         );
-        console.log("news response", response.data);
         return response.data;
     } catch (error) {
         console.log(error);
@@ -30,7 +28,6 @@ export async function getNews() {
 }
 
 export async function getTopics() {
-    console.log("Calling get topics api");
     try {
         const response = await axios.post(
             GET_TOPICS_API_URL,
@@ -43,7 +40,6 @@ export async function getTopics() {
                 },
             }
         );
-        console.log("topics response", response.data);
         return response.data || [];
     } catch (error) {
         console.log(error);
@@ -52,7 +48,6 @@ export async function getTopics() {
 }
 
 export async function setTopics(topics: Array<string>) {
-    console.log("Calling set topics api");
     try {
         await axios.post(
             SET_TOPICS_API_URL,
